@@ -1,64 +1,20 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
-  <title>Tiny Grid</title>
-  <style type="text/css">
-  html {
-    overflow: hidden;
-    touch-action: none;
-    content-zooming: none;
-  }
-  
-  body {
-    margin: 0;
-    padding: 0;
-    background: #000;
-    position: absolute;
-    width: 100%;
-    height: 100%;
-  }
-  
-  #screen {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-  }
-  
-  #screen .img {
-    position: absolute;
-    cursor: pointer;
-    width: 100%;
-    height: 100%;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-  }
-  
-  #screen .frame {
-    position: absolute;
-    width: 50%;
-    height: 50%;
-  }
-  
-  #images {
-    display: none;
-  }
-  </style>
+  <meta charset="UTF-8">
+  <title>Magic Particles</title>
+  <style>body{background-color: #1C1914}</style>
 </head>
-
 <body>
-  <div id="screen"></div>
-  <div id="images">
-    <img src="./black.jpg">
-    <img src="./red.jpg">
-    <img src="./red.jpg">
-    <img src="./black.jpg">
-  </div>
+<!-- Inspired by https://github.com/supperjet/text-particles  -->
+<canvas id="canvas"></canvas>
 
+<input type="text" id="message" value="HeiHeiHei"
+       placeholder="Input your text here" title="Input your text here">
 
-  <script src="index.js"></script>
+<script src="util.js"></script>
+<script src="Particle.js"></script>
+<script src="Container.js"></script>
+<script src="index.js"></script>
 </body>
-
 </html>

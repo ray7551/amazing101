@@ -4,6 +4,26 @@ var $ = function(selector) {
 var $all = function(selector) {
   return document.querySelectorAll(selector);
 }
+var colorScheme = [
+'#6BED08',
+'#A0F261',
+'#86EF35',
+'#60DD00',
+'#4AAA00',
+'#F8FE09',
+'#FBFE66',
+'#F9FE39',
+'#F2F800',
+'#BABF00',
+'#06BEBE',
+'#54D1D1',
+'#2CC5C5',
+'#009595',
+'#007373',
+];
+getRadomColor = function() {
+  return colorScheme[Math.floor(colorScheme.length * Math.random())];
+};
 
 window.addEventListener('DOMContentLoaded', function() {
   function makeBox(el, x, y, className) {
@@ -16,7 +36,7 @@ window.addEventListener('DOMContentLoaded', function() {
     var box = document.createElement("div");
     box.classList.add('box');
     if (className) box.classList.add(className);
-    box.style.backgroundColor = "#"+((1<<24)*Math.random()|0).toString(16);
+    box.style.backgroundColor = getRadomColor();
 
     d.appendChild(box);
     el.appendChild(d);
@@ -29,13 +49,15 @@ window.addEventListener('DOMContentLoaded', function() {
     makeBox(el, 0, 1, 'diagonal');
     makeBox(el, 1, 1);
     if (!remove) {
-      return; }
+      return;
+    }
     el.removeChild(el.childNodes[0]);
   };
   var level = 1;
   divide($("#screen"), false, level);
   window.ondragstart = function() {
-    return false; }
+    return false;
+  }
   document.onclick = function() {
     if (level > 9) {
       $all('.box').forEach(function(box) {
