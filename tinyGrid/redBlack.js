@@ -1,9 +1,9 @@
 var $ = function(selector){
   return document.querySelector(selector);
-}
+};
 var $all = function(selector){
   return document.querySelectorAll(selector);
-}
+};
 window.addEventListener('load', function () {
   var random = $("#images").querySelectorAll("img");
   function makeImg (el,x,y,className) {
@@ -16,7 +16,8 @@ window.addEventListener('load', function () {
     img.src         = random[Math.floor(Math.random()*4)].src;
     d.appendChild(img);
     el.appendChild(d);
-  };
+  }
+
   function divide (el, remove) {
     remove = remove===void 0 ? true : !!remove;
     makeImg(el,0,0);
@@ -25,10 +26,11 @@ window.addEventListener('load', function () {
     makeImg(el,1,1);
     if(!remove){return;}
     el.removeChild(el.childNodes[0]);
-  };
+  }
+
   var level = 1;
   divide($("#screen"), false, level);
-  window.ondragstart = function() { return false; }
+
   document.onclick = function () {
     if(level > 11){return}
     level++;
