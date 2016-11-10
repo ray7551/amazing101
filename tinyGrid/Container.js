@@ -3,7 +3,7 @@ function Container(text, option) {
       text: 'HeiHeiHei',
       type: 'circle',
       resolution: 10,
-      radius: 2,
+      radius: 1,
       gravity: 0,
       duration: .4,
       speed: .1
@@ -22,7 +22,7 @@ Container.prototype.render = function (context) {
   var width = context.canvas.width;
   var height = context.canvas.height;
 
-  context.font = height*.5 + "px arial";
+  context.font = height*.4 + "px arial";
   context.fillText(this.text, width*.1, height*.6);
   var imgData = context.getImageData(0, 0, width, height);
   var buffer32 = new Uint32Array(imgData.data.buffer); // translate 8bit unsigned int into 32bit

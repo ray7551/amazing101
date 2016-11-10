@@ -18,6 +18,9 @@ $message.addEventListener('keyup', function () {
   particles.render(context);
 });
 
+// @TODO particles 内生成一个光标，可直接编辑文字
+// @TODO 可设置基础字体
+
 particles.render(context);
 
 (function drawFrame() {
@@ -30,8 +33,8 @@ particles.render(context);
 }());
 
 function resize() {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight * .8;
+  canvas.width = document.body.clientWidth;
+  canvas.height = document.body.clientHeight * .8;
   if(!particles) return;
   particles.clearChildren();
   particles.render(context, type);
