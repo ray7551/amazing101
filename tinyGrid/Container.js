@@ -1,4 +1,5 @@
 function Container(text, option) {
+  // @TODO the font-family should be set in the option
   this.option = option || {
       text: 'HeiHeiHei',
       type: 'circle',
@@ -17,7 +18,9 @@ Container.prototype.setText = function (text) {
 Container.prototype.clearChildren = function () {
   this.children = [];
 };
-// @TODO: Container.prototype.addChild
+Container.prototype.addChild = function (child) {
+  this.children.push(child);
+};
 Container.prototype.render = function (context) {
   var width = context.canvas.width;
   var height = context.canvas.height;
@@ -33,7 +36,7 @@ Container.prototype.render = function (context) {
     for (var i = 0; i < width; i += gridW) {
       if (buffer32[j * width + i]) {
         var particle = new Particle(i, j, this.option);
-        this.children.push(particle);
+        this.addChild(particle);
       }
     }
   }

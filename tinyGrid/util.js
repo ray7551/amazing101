@@ -4,5 +4,8 @@ var util = {
   },
   randomInt: function(min, max) {
     return min + Math.random() * (max - min + 1);
+  },
+  $: function (selector) {
+    return document.querySelector(selector);
   }
 };

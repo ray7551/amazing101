@@ -1,7 +1,6 @@
-var canvas = document.getElementById('canvas');
+var canvas = util.$('#canvas');
 var context = canvas.getContext('2d');
 context.textAlign = "center";
-resize();
 var type = "circle";
 var colors = [
   '#f44336', '#e91e63', '#9c27b0', '#673ab7', '#3f51b5',
@@ -9,8 +8,9 @@ var colors = [
   '#8BC34A', '#CDDC39', '#FFEB3B', '#FFC107', '#FF9800',
   '#FF5722'
 ];
-var $message = document.getElementById('message');
+var $message = util.$('#message');
 var particles = new Container($message.value);
+resize();
 $message.addEventListener('keyup', function () {
   context.clearRect(0, 0, canvas.width, canvas.height);
   particles.setText(this.value);
@@ -18,8 +18,7 @@ $message.addEventListener('keyup', function () {
   particles.render(context);
 });
 
-// @TODO particles 内生成一个光标，可直接编辑文字
-// @TODO 可设置基础字体
+// @TODO generate a caret inside particles, and i can edit it directly
 
 particles.render(context);
 

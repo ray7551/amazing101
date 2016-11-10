@@ -42,6 +42,7 @@ Particle.prototype = {
     this.vy = Math.sin(heading) * speed;
   },
 
+  // @TODO: particle or the container should be rendered instead of have a render function
   render: function (context) {
     this.x += this.vx;
     this.y += this.vy;
