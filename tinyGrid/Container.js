@@ -1,43 +1,47 @@
-function Container(text, option) {
-  // @TODO the font-family should be set in the option
-  this.option = option || {
-      text: 'HeiHeiHei',
-      type: 'circle',
-      resolution: 10,
-      radius: 1,
-      gravity: 0,
-      duration: .4,
-      speed: .1
-    };
-  this.text = text;
-  this.children = [];
-}
-Container.prototype.setText = function (text) {
-  this.text = text;
-};
-Container.prototype.clearChildren = function () {
-  this.children = [];
-};
-Container.prototype.addChild = function (child) {
-  this.children.push(child);
-};
-Container.prototype.render = function (context) {
-  var width = context.canvas.width;
-  var height = context.canvas.height;
-
-  context.font = height*.4 + "px arial";
-  context.fillText(this.text, width*.1, height*.6);
-  var imgData = context.getImageData(0, 0, width, height);
-  var buffer32 = new Uint32Array(imgData.data.buffer); // translate 8bit unsigned int into 32bit
-
-  var gridH, gridW;
-  gridH = gridW = parseFloat(this.option.resolution);
-  for (var j = 0; j < height; j += gridH) {
-    for (var i = 0; i < width; i += gridW) {
-      if (buffer32[j * width + i]) {
-        var particle = new Particle(i, j, this.option);
-        this.addChild(particle);
-      }
-    }
+var Container = (function () {
+  "use strict";
+  function Container(option) {
+    option = util.deepAssign({
+      width: document.body.clientWidth,
+      height: document.body.clientHeight,
+      x: 0,
+      y: 0
+    }, option);
+    this.width = option.width;
+    this.height = option.height;
+    this.x = option.x;
+    this.y = option.y;
+    this.needRender = true;
+    this.autoResize = false;
+    this.children = [];
   }
-};
+  Container.prototype.resize = function (width, height) {
+    var originWidth = this.width;
+    var originHeight = this.height;
+    this.width = width || this.width;
+    this.height = height || this.height;
+    // @TODO resize all children
+    this.children.forEach(function(container){
+      if(!container.autoResize) {
+        container.resize();
+        return;
+      }
+      container.resize(
+        container.width * this.width / originWidth,
+        container.height * this.height / originHeight);
+    }.bind(this));
+  };
+  Container.prototype.clearChildren = function () {
+    this.children = [];
+  };
+  Container.prototype.addChild = function (child) {
+    this.children.push(child);
+  };
+  Container.prototype.update = function () {
+    this.children.forEach(function (particle) {
+      particle.update(renderer.ctx);
+    });
+    this.needRender = true;
+  };
+  return Container;
+})();

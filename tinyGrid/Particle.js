@@ -1,12 +1,17 @@
+util.extend(Particle, Container);
 function Particle(x, y, option) {
-  this.radius = option.radius;
   this.duration = option.duration;
   this.speed = option.speed;
+  this.radius = option.radius;
+  this.width = this.height = util.randomInt(option.radius, option.radius + 3);
+  Container.call(this, {
+    width: this.width,
+    height: this.height,
+    x: x,
+    y: y
+  });
   this.type = option.type;
-  this.futurRadius = util.randomInt(option.radius, option.radius + 3);
 
-  this.x = x;
-  this.y = y;
   this.vx = 0;
   this.vy = 0;
 
@@ -41,16 +46,21 @@ Particle.prototype = {
     this.vx = Math.cos(heading) * speed;
     this.vy = Math.sin(heading) * speed;
   },
+  
+  resize: function(width, height){
+    Container.prototype.resize.call(this);
+    // @TODO adjust x, y
+  },
 
   // @TODO: particle or the container should be rendered instead of have a render function
-  render: function (context) {
+  update: function (context) {
     this.x += this.vx;
     this.y += this.vy;
     this.vy += this.gravity;
     this.vx *= this.friction;
     this.vy *= this.friction;
 
-    if (this.radius < this.futurRadius && this.dying === false) {
+    if (this.radius < this.width && this.dying === false) {
       this.radius += this.duration;
     } else {
       this.dying = true;
@@ -59,46 +69,16 @@ Particle.prototype = {
       this.radius -= this.duration;
     }
 
-    switch (this.type) {
-      case 'circle':
-        Graphics.drawCircle(context, this.x, this.y, this.color, this.radius);
-        break;
-      case 'rect':
-        Graphics.drawRect(context, this.x, this.y, this.color, this.futurRadius);
-        break;
-    }
-
     if (this.y < 0 || this.radius < 1) {
       this.x = this.base[0];
       this.y = this.base[1];
       this.dying = false;
       this.radius = 1.1;
       this.setSpeed(this.speed);
-      this.futurRadius = util.randomInt(this.radius, this.radius + 3);
+      this.width = util.randomInt(this.radius, this.radius + 3);
       this.setHeading(util.randomInt(0, 2 * Math.PI));
     }
+    
+    Container.prototype.update.call(this);
   }
-};
-
-// @TODO: make Graphics a class
-var Graphics = function() {};
-Graphics.drawCircle = function (context, x, y, color, radius) {
-  context.save();
-  context.fillStyle = color;
-  context.beginPath();
-  context.arc(x, y, radius, Math.PI * 2, 0);
-  context.closePath();
-  context.fill();
-  context.restore();
-};
-
-Graphics.drawRect = function (context, x, y, color, width, height) {
-  height = height===void 0 ? width : height;
-  context.save();
-  context.fillStyle = color;
-  context.beginPath();
-  context.fillRect(x, y, width, height);
-  context.closePath();
-  context.fill();
-  context.restore();
 };

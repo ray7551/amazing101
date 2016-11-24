@@ -4,9 +4,11 @@
   <meta charset="UTF-8">
   <title>Magic Particles</title>
   <style>
-    body, div, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6, pre, code, form, fieldset, legend, input, textarea, p, blockquote, th, td, hr, button, article, aside, details, figcaption, figure, footer, header, menu, nav, section {
-      margin: 0;
-      padding: 0;
+    html {
+      box-sizing: border-box;
+    }
+    *, *:before, *:after {
+      box-sizing: inherit;
     }
     html, body {
       width: 100%;
@@ -24,12 +26,15 @@
 <body>
 <!-- Inspired by https://github.com/supperjet/text-particles  -->
 <canvas id="canvas"></canvas>
-<input type="text" id="message" value="HeiHeiHei"
+<input type="text" id="message" value="Hello"
        placeholder="Input your text here" title="Input your text here">
 
 <script src="util.js"></script>
-<script src="Particle.js"></script>
 <script src="Container.js"></script>
+<script src="Stage.js"></script>
+<script src="Particle.js"></script>
+<script src="Graphics.js"></script>
+<script src="Renderer.js"></script>
 <script src="index.js"></script>
 </body>
 </html>
