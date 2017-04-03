@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Test</title>
+</head>
+<body>
+
+<script src="./Transform2D.js"></script>
+<script>
+  let t = new Transform2D();
+  let ctx = document.createElement('canvas').getContext('2d');
+  t.track(ctx);
+
+  ctx.scale(2, 2);
+  ctx.save();
+  ctx.translate(100, 200);
+  ctx.restore();
+  ctx.scale(3, 7);
+  ctx.rotate(Math.PI / 6);
+  ctx.rotateDegree(30);
+  ctx.save();
+  ctx.rotate(Math.PI * 3);
+  ctx.translate(15, 23)
+  ctx.restore();;
+  ctx.scale(5.3, 27.2);
+  ctx.save();
+  ctx.rotateDegree(11);
+  ctx.scale(.3, .2);
+  ctx.translate(1, 2);
+  ctx.save();
+  ctx.translate(150, 230);
+  ctx.restore();
+  ctx.rotate(Math.PI * 3.14);
+  console.clear();
+  console.log(ctx.transformMatrix);
+  console.log(ctx.mozCurrentTransform);
+  console.log(new Date().toString())
+</script>
+</body>
+</html>
