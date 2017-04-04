@@ -16,7 +16,7 @@ class Viewer {
     this.canvas.addEventListener('wheel', (e) => {
       if(!e.deltaY) return;
 
-      this.resizeImage(e.deltaY, {
+      this.zoom(e.deltaY, {
         x: e.offsetX,
         y: e.offsetY
       });
@@ -73,47 +73,60 @@ class Viewer {
 
   draw(sx = 0, sy =0, sw, sh, dx=0, dy=0) {
     this.gfx.background('rgb(255, 255, 255)');
-    this.gfx.grid('gray');
+    this.gfx.grid();
 
     if(!this.image) {
       return;
     }
 
-    this.sx = sx;
-    this.sy = sy;
+    this.sx = sx; this.sy = sy;
+    this.imagePosition = {x: dx, y: dy};
     this.sw = sw || this.image.width;
     this.sh = sh || this.image.height;
     let canvas = this.canvas;
 
     // calc where to draw img in the main canvas,
     // put img at left top corner and resize image to make it all visible
-    let dWidth, dHeight;
     if(this.sw <= canvas.width && this.sh <= canvas.height) {
-      dWidth = this.sw;
-      dHeight = this.sh;
+      this.imageWidth = this.sw;
+      this.imageHeight = this.sh;
     } else if(this.sh / this.sw >= canvas.height / canvas.width) {
-      dHeight = canvas.height;
-      dWidth = this.sw * canvas.height / this.sh;
+      this.imageHeight = canvas.height;
+      this.imageWidth = this.sw * canvas.height / this.sh;
     } else {
-      dWidth = canvas.width;
-      dHeight = this.sh * canvas.width / this.sw;
+      this.imageWidth = canvas.width;
+      this.imageHeight = this.sh * canvas.width / this.sw;
     }
     // todo: add loading notice before image really show up
-    this.gfx.drawImage(this.image, this.sx, this.sy, this.sw, this.sh, dx, dy, dWidth, dHeight);
+    this.gfx.drawImage(this.image, this.sx, this.sy, this.sw, this.sh,
+      this.imagePosition.x, this.imagePosition.y, this.imageWidth, this.imageHeight);
     this.gfx.strokeInnerRect(200, 200, 'red', 200, 200, 2);
   }
 
-  resizeImage(wheelDeltaY, centerPoint = {x: 0, y: 0}) {
+  /**
+   * Zooming in mouse point or image center
+   * @param {Number} wheelDeltaY
+   * @param {{x: Number, y: Number}} centerPoint x,y distance relative to canvas left top dot
+   */
+  zoom(wheelDeltaY, centerPoint = {x: 0, y: 0}) {
     // TODO if centerPoint is not in image, should replace it with image center 
     let isZoomIn = wheelDeltaY < 0;
     let zoomStep = isZoomIn ? Viewer.zoomStep : -Viewer.zoomStep;
     let nextScale = this.gfx.scale.x * (1 + zoomStep);
+    // TODO if image is too small to see, don't zoom out
     if(nextScale > Viewer.zoomMax || nextScale < Viewer.zoomMin) {
       return;
     }
 
     this.gfx.clear();
     this.gfx.zoom(zoomStep, centerPoint, () => this.draw());
+  }
+
+  /**
+   * Drag and drop to move image
+   */
+  pan() {
+    
   }
 }
 Viewer.zoomStep = .1;

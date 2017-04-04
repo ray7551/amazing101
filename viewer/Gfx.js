@@ -22,7 +22,7 @@ class Gfx {
     this.ctx.restore();
   }
 
-  grid(color) {
+  grid(color = 'gray') {
 
   }
   

@@ -32,18 +32,18 @@
 
 class Transform2D {
   constructor(m) {
-    this.m = (Array.isArray(m) && m.length === 6) ? [...m] : Transform2D.defaultMatrix;
+    this.m = (Array.isArray(m) && m.length === 6) ? [...m] : [...Transform2D.identityMatrix];
   }
   
   setMatrix (matrix) {
     if(!Array.isArray(matrix) || matrix.length !== 6 || !Transform2D.isNumber(...matrix)) {
       throw new Error('setMatrix parameters invalid.');
     }
-    this.m = matrix;
+    this.m = [...matrix];
   }
 
   reset() {
-    this.m = Transform2D.defaultMatrix;
+    this.m = [...Transform2D.identityMatrix];
     return this;
   }
 
@@ -121,9 +121,12 @@ class Transform2D {
       return;
     }
     
+    // read only property, a copy of current transformMatrix
     Object.defineProperty(context, 'transformMatrix', {
-      get: () => this.m,
-      set: (m) => this.setMatrix(m)
+      get: () => [...this.m],
+      set: () => {
+        throw Error('You should set transformMatrix by context.setTransform');
+      }
     });
 
     // transform matrix stack
@@ -150,17 +153,17 @@ class Transform2D {
      * @param {Transform2D} transform2D
      */
     context.setTransform2D = (transform2D) => {
-      this.m = transform2D.m;
-      return setTransform.call(context, ...transform2D.m);
+      this.m = transform2D.clone().m;
+      return setTransform.call(context, ...this.m);
     };
     if(context.resetTransform) {
       const resetTransform = context.resetTransform;
       context.resetTransform = () => {
-        this.m = Transform2D.defaultMatrix;
+        this.reset();
         return resetTransform.call(context);
       };
     } else {
-      context.resetTransform = () => context.setTransform(...Transform2D.defaultMatrix);
+      context.resetTransform = () => context.setTransform(...Transform2D.identityMatrix);
     }
 
     // basic transformations
@@ -171,10 +174,7 @@ class Transform2D {
     };
     let scale = context.scale;
     context.scale = (sx, sy) => {
-      console.log('before scale', this.m);
       this.scale(sx, sy);
-      console.log('scaling', sx, sy);
-      console.log('after scale', this.m);
       return scale.call(context, sx, sy);
     };
 
@@ -195,15 +195,30 @@ class Transform2D {
       return translate.call(context, dx, dy);
     };
 
-    context.transformPoint = (point) => {
-      return Transform2D.transformPoint(point, Transform2D.inverse(this.m));
-    }
+    /**
+     * Transform a point position(relative to the canvas left top dot)
+     * to its current transformed coordination position
+     */
+    context.transformPoint = (canvasPoint) => {
+      // coordination position -> this.m -> canvasPoint
+      // canvasPoint -> Transform2D.inverse(this.m) -> coordination position
+      // Here we use a inverse matrix because
+      // we want to get its coordination position
+      return Transform2D.transformPoint(canvasPoint, Transform2D.inverse(this.m));
+    };
 
     context.transform2DTracked = true;
   }
 }
 
-Transform2D.defaultMatrix = [1,0,0,1,0,0];
+Object.defineProperty(Transform2D, 'identityMatrix', {
+  get: function () {
+    return [1,0,0,1,0,0];
+  },
+  set: function(){
+    throw Error('identityMatrix is readonly');
+  }
+});
 Transform2D.deg2rad = Math.PI / 180;
 Transform2D.isNumber = function(...args) {
   for(let arg of args) {
@@ -230,7 +245,7 @@ Transform2D.inverse = function(m) {
     d * (m2 * m5 - m3 * m4),
     d * (m1 * m4 - m0 * m5)
   ];
-}
+};
 Transform2D.transformPoint = function(point, matrix) {
     let {x, y} = point;
     if(!Transform2D.isNumber(x, y) || !Transform2D.isTransformMatrix(matrix)) {
@@ -240,4 +255,4 @@ Transform2D.transformPoint = function(point, matrix) {
       x: x * matrix[0] + y * matrix[2] + matrix[4],
       y: x * matrix[1] + y * matrix[3] + matrix[5]
     };
-}
+};
