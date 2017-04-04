@@ -15,7 +15,7 @@
  ctx.scale(2);
 
  But now you can retrieve it :)
- 
+
  @usage You can track 2D context:
  let t = new Transform2D();
  let ctx = canvas.getContext('2d');
@@ -25,7 +25,7 @@
  console.log(ctx.transformMatrix); // [2, 0, 0, 2, 100, 200]
  // if your firefox support mozCurrentTransform
  console.log(ctx.mozCurrentTransform); // [2, 0, 0, 2, 100, 200]
- 
+
 
  @notice Remember that this does not account for any CSS transforms applied to the canvas
  */
@@ -34,9 +34,57 @@ class Transform2D {
   constructor(m) {
     this.m = (Array.isArray(m) && m.length === 6) ? [...m] : [...Transform2D.identityMatrix];
   }
-  
-  setMatrix (matrix) {
-    if(!Array.isArray(matrix) || matrix.length !== 6 || !Transform2D.isNumber(...matrix)) {
+
+  static get identityMatrix() {
+    return [1, 0, 0, 1, 0, 0];
+  }
+
+  static get deg2rad() {
+    return Math.PI / 180;
+  }
+
+  static isTransformMatrix(m) {
+    return Array.isArray(m) && m.length === 6 || Transform2D.isNumber(...m);
+  }
+
+  static isNumber(...args) {
+    for (let arg of args) {
+      if (typeof arg !== 'number' || isNaN(arg) || !isFinite(arg)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  static inverse(m) {
+    if (!Transform2D.isTransformMatrix(m)) {
+      throw new Error('inverse parameters invalid.');
+    }
+    let [m0, m1, m2, m3, m4, m5] = m,
+      d = 1 / (m0 * m3 - m1 * m2);
+    return [
+      m3 * d,
+      -m1 * d,
+      -m2 * d,
+      m0 * d,
+      d * (m2 * m5 - m3 * m4),
+      d * (m1 * m4 - m0 * m5)
+    ];
+  }
+
+  static transformPoint(point, matrix) {
+    let {x, y} = point;
+    if (!Transform2D.isNumber(x, y) || !Transform2D.isTransformMatrix(matrix)) {
+      throw new Error('transformPoint parameters invalid.');
+    }
+    return {
+      x: x * matrix[0] + y * matrix[2] + matrix[4],
+      y: x * matrix[1] + y * matrix[3] + matrix[5]
+    };
+  }
+
+  setMatrix(matrix) {
+    if (!Array.isArray(matrix) || matrix.length !== 6 || !Transform2D.isNumber(...matrix)) {
       throw new Error('setMatrix parameters invalid.');
     }
     this.m = [...matrix];
@@ -53,11 +101,11 @@ class Transform2D {
 
   multiply(transform2D) {
     let tm = transform2D.m;
-    if(!Array.isArray(tm) || tm.length !== 6 || !Transform2D.isNumber(...tm)) {
+    if (!Array.isArray(tm) || tm.length !== 6 || !Transform2D.isNumber(...tm)) {
       throw new Error('multiply parameters invalid.');
     }
     let [m0, m1, m2, m3, m4, m5] = this.m;
-  
+
     this.m[0] = m0 * tm[0] + m2 * tm[1];
     this.m[1] = m1 * tm[0] + m3 * tm[1];
     this.m[2] = m0 * tm[2] + m2 * tm[3];
@@ -73,7 +121,7 @@ class Transform2D {
   }
 
   rotate(rad) {
-    if(!Transform2D.isNumber(rad)) {
+    if (!Transform2D.isNumber(rad)) {
       throw new Error('rotate parameters invalid.');
     }
     let cos = Math.cos(rad), sin = Math.sin(rad),
@@ -86,7 +134,7 @@ class Transform2D {
   }
 
   translate(x, y) {
-    if(!Transform2D.isNumber(x, y)) {
+    if (!Transform2D.isNumber(x, y)) {
       throw new Error('translate parameters invalid.');
     }
     this.m[4] += this.m[0] * x + this.m[2] * y;
@@ -95,7 +143,7 @@ class Transform2D {
   }
 
   scale(sx, sy) {
-    if(!sx || !sy || !Transform2D.isNumber(sx, sy)) {
+    if (!sx || !sy || !Transform2D.isNumber(sx, sy)) {
       throw new Error('scale parameters invalid.');
     }
     this.m[0] *= sx;
@@ -108,7 +156,7 @@ class Transform2D {
   transformPoint(point) {
     return Transform2D.transformPoint(point, this.m);
   }
-  
+
   /**
    * Tracking 2D context's transform matrix
    * @notice You must track context before doing anything related to transform matrix,
@@ -117,10 +165,10 @@ class Transform2D {
    */
   track(context) {
     this.ctx = context;
-    if(context.transform2DTracked) {
+    if (context.transform2DTracked) {
       return;
     }
-    
+
     // read only property, a copy of current transformMatrix
     Object.defineProperty(context, 'transformMatrix', {
       get: () => [...this.m],
@@ -156,7 +204,7 @@ class Transform2D {
       this.m = transform2D.clone().m;
       return setTransform.call(context, ...this.m);
     };
-    if(context.resetTransform) {
+    if (context.resetTransform) {
       const resetTransform = context.resetTransform;
       context.resetTransform = () => {
         this.reset();
@@ -210,49 +258,3 @@ class Transform2D {
     context.transform2DTracked = true;
   }
 }
-
-Object.defineProperty(Transform2D, 'identityMatrix', {
-  get: function () {
-    return [1,0,0,1,0,0];
-  },
-  set: function(){
-    throw Error('identityMatrix is readonly');
-  }
-});
-Transform2D.deg2rad = Math.PI / 180;
-Transform2D.isNumber = function(...args) {
-  for(let arg of args) {
-    if(typeof arg !== 'number' || isNaN(arg) || !isFinite(arg)) {
-      return false;
-    }
-  }
-  return true;
-};
-Transform2D.isTransformMatrix = function(m) {
-  return Array.isArray(m) && m.length===6 || Transform2D.isNumber(...m);
-};
-Transform2D.inverse = function(m) {
-  if(!Transform2D.isTransformMatrix(m)) {
-    throw new Error('inverse parameters invalid.');
-  }
-  let [m0, m1, m2, m3, m4, m5] = m,
-    d = 1 / (m0 * m3 - m1 * m2);
-  return [
-    m3 * d,
-    -m1 * d,
-    -m2 * d,
-    m0 * d,
-    d * (m2 * m5 - m3 * m4),
-    d * (m1 * m4 - m0 * m5)
-  ];
-};
-Transform2D.transformPoint = function(point, matrix) {
-    let {x, y} = point;
-    if(!Transform2D.isNumber(x, y) || !Transform2D.isTransformMatrix(matrix)) {
-      throw new Error('transformPoint parameters invalid.');
-    }
-    return {
-      x: x * matrix[0] + y * matrix[2] + matrix[4],
-      y: x * matrix[1] + y * matrix[3] + matrix[5]
-    };
-};
