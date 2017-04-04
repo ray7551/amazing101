@@ -10,11 +10,11 @@ class Gfx {
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d');
     this.lastScale = 1;
-    if(transform) {
+    if (transform) {
       transform.track(this.ctx);
     }
   }
-  
+
   background(color) {
     this.ctx.save();
     this.ctx.resetTransform();
@@ -25,11 +25,11 @@ class Gfx {
   grid(color = 'gray') {
 
   }
-  
+
   drawImage(img, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight) {
     this.ctx.drawImage(img, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
   }
-  
+
   clear() {
     this.ctx.save();
     this.ctx.resetTransform();
@@ -46,7 +46,7 @@ class Gfx {
     this.ctx.fill();
     this.ctx.restore();
   };
-  
+
   strokeInnerRect(x, y, color, width, height, lineWidth = 1) {
     // default strokeRect method actually draw 'centerRect',
     // so we have to recalculate x, y, width, height here
@@ -54,7 +54,7 @@ class Gfx {
     y = y + lineWidth / 2;
     width = width > 2 * lineWidth ? width - lineWidth : width;
     height = height > 2 * lineWidth ? height - lineWidth : height;
-    height = height===void 0 ? width : height;
+    height = height === void 0 ? width : height;
     this.ctx.save();
     this.ctx.strokeStyle = color;
     this.ctx.lineWidth = lineWidth;
@@ -63,7 +63,7 @@ class Gfx {
   };
 
   drawRect(x, y, color, width, height) {
-    height = height===void 0 ? width : height;
+    height = height === void 0 ? width : height;
     this.ctx.save();
     this.ctx.fillStyle = color;
     this.ctx.beginPath();
@@ -73,23 +73,23 @@ class Gfx {
     this.ctx.restore();
   };
 
-  drawText (text, width, height) {
+  drawText(text, width, height) {
     this.ctx.save();
     this.ctx.font = height + "px/1.4 arial";
     this.ctx.fillText(text, 0, height);
     this.ctx.restore();
   }
 
-  getImageDataBuffer32 () {
+  getImageDataBuffer32() {
     let imgData = this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height);
-  
+
     return {
       buffer32: new Uint32Array(imgData.data.buffer),
       width: this.canvas.width,
       height: this.canvas.height
     };
   }
-  
+
   zoom(zoomStep, centerPoint = {x: 0, y: 0}, callback) {
     let scale = 1 + zoomStep;
 

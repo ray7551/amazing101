@@ -14,7 +14,7 @@ class Viewer {
     this.thumbGfx.drawRect(0, 0, 'rgb(255, 255, 255)', this.thumbCanvas.width, this.thumbCanvas.height);
 
     this.canvas.addEventListener('wheel', (e) => {
-      if(!e.deltaY) return;
+      if (!e.deltaY) return;
 
       this.zoom(e.deltaY, {
         x: e.offsetX,
@@ -26,7 +26,7 @@ class Viewer {
   }
 
   _initThumb() {
-    if(this.image === null) {
+    if (this.image === null) {
       return;
     }
     let w = this.image.width, h = this.image.height,
@@ -37,7 +37,7 @@ class Viewer {
     // calc where to draw img in the thumb canvas
     // if tan <= cTan, then fit to thumb canvas width,
     // otherwise, fit to thumb canvas height
-    if(tan <= cTan) {
+    if (tan <= cTan) {
       this.thumbDw = cw;
       this.thumbDh = cw * tan;
       this.thumbDx = 0;
@@ -71,15 +71,16 @@ class Viewer {
     });
   }
 
-  draw(sx = 0, sy =0, sw, sh, dx=0, dy=0) {
+  draw(sx = 0, sy = 0, sw, sh, dx = 0, dy = 0) {
     this.gfx.background('rgb(255, 255, 255)');
     this.gfx.grid();
 
-    if(!this.image) {
+    if (!this.image) {
       return;
     }
 
-    this.sx = sx; this.sy = sy;
+    this.sx = sx;
+    this.sy = sy;
     this.imagePosition = {x: dx, y: dy};
     this.sw = sw || this.image.width;
     this.sh = sh || this.image.height;
@@ -87,10 +88,10 @@ class Viewer {
 
     // calc where to draw img in the main canvas,
     // put img at left top corner and resize image to make it all visible
-    if(this.sw <= canvas.width && this.sh <= canvas.height) {
+    if (this.sw <= canvas.width && this.sh <= canvas.height) {
       this.imageWidth = this.sw;
       this.imageHeight = this.sh;
-    } else if(this.sh / this.sw >= canvas.height / canvas.width) {
+    } else if (this.sh / this.sw >= canvas.height / canvas.width) {
       this.imageHeight = canvas.height;
       this.imageWidth = this.sw * canvas.height / this.sh;
     } else {
@@ -114,7 +115,7 @@ class Viewer {
     let zoomStep = isZoomIn ? Viewer.zoomStep : -Viewer.zoomStep;
     let nextScale = this.gfx.scale.x * (1 + zoomStep);
     // TODO if image is too small to see, don't zoom out
-    if(nextScale > Viewer.zoomMax || nextScale < Viewer.zoomMin) {
+    if (nextScale > Viewer.zoomMax || nextScale < Viewer.zoomMin) {
       return;
     }
 
@@ -126,7 +127,7 @@ class Viewer {
    * Drag and drop to move image
    */
   pan() {
-    
+
   }
 }
 Viewer.zoomStep = .1;
