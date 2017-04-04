@@ -22,9 +22,9 @@
  t.track(canvasContext);
  ctx.translate(100, 200);
  ctx.scale(2, 2);
- console.log(ctx.transformMatrix); // [2, 0, 0, 2, 100, 200]
+ clog(ctx.transformMatrix); // [2, 0, 0, 2, 100, 200]
  // if your firefox support mozCurrentTransform
- console.log(ctx.mozCurrentTransform); // [2, 0, 0, 2, 100, 200]
+ clog(ctx.mozCurrentTransform); // [2, 0, 0, 2, 100, 200]
 
 
  @notice Remember that this does not account for any CSS transforms applied to the canvas
@@ -35,6 +35,7 @@ class Transform2D {
     this.m = (Array.isArray(m) && m.length === 6) ? [...m] : [...Transform2D.identityMatrix];
   }
 
+  // this getter make sure identityMatrix will not change
   static get identityMatrix() {
     return [1, 0, 0, 1, 0, 0];
   }
@@ -244,15 +245,22 @@ class Transform2D {
     };
 
     /**
-     * Transform a point position(relative to the canvas left top dot)
+     * Transform a point position under current transform matrix,
+     * return its real position(relative to the canvas left top dot)
+     */
+    context.transformPoint = (point) => {
+      return this.transformPoint(point);
+    };
+    /**
+     * Transform a mouse point position(relative to the canvas left top dot)
      * to its current transformed coordination position
      */
-    context.transformPoint = (canvasPoint) => {
-      // coordination position -> this.m -> canvasPoint
-      // canvasPoint -> Transform2D.inverse(this.m) -> coordination position
+    context.transformMousePoint = (mousePoint) => {
+      // coordination position -> this.m -> mousePoint position
+      // mousePoint position -> Transform2D.inverse(this.m) -> coordination position
       // Here we use a inverse matrix because
       // we want to get its coordination position
-      return Transform2D.transformPoint(canvasPoint, Transform2D.inverse(this.m));
+      return Transform2D.transformPoint(mousePoint, Transform2D.inverse(this.m));
     };
 
     context.transform2DTracked = true;

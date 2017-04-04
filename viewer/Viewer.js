@@ -59,7 +59,7 @@ class Viewer {
       y = this.thumbScale * this.sy + this.thumbDy,
       width = this.thumbScale * this.image.width,
       height = this.thumbScale * this.image.height;
-    console.log('update thumb rect', x, y, width, height, lineWidth);
+    clog('update thumb rect', x, y, width, height, lineWidth);
     this.thumbGfx.strokeInnerRect(x, y, 'red', width, height, lineWidth);
   }
 
@@ -86,8 +86,8 @@ class Viewer {
     this.sh = sh || this.image.height;
     let canvas = this.canvas;
 
-    // calc where to draw img in the main canvas,
-    // put img at left top corner and resize image to make it all visible
+    // Put img at left top corner and resize image to make it all visible.
+    // Calc the destination imageWidth and imageHeight it should be
     if (this.sw <= canvas.width && this.sh <= canvas.height) {
       this.imageWidth = this.sw;
       this.imageHeight = this.sh;
@@ -107,20 +107,46 @@ class Viewer {
   /**
    * Zooming in mouse point or image center
    * @param {Number} wheelDeltaY
-   * @param {{x: Number, y: Number}} centerPoint x,y distance relative to canvas left top dot
+   * @param {{x: Number, y: Number}} mousePosition x,y distance relative to canvas left top dot
    */
-  zoom(wheelDeltaY, centerPoint = {x: 0, y: 0}) {
-    // TODO if centerPoint is not in image, should replace it with image center 
+  zoom(wheelDeltaY, mousePosition = {x: 0, y: 0}) {
     let isZoomIn = wheelDeltaY < 0;
     let zoomStep = isZoomIn ? Viewer.zoomStep : -Viewer.zoomStep;
     let nextScale = this.gfx.scale.x * (1 + zoomStep);
-    // TODO if image is too small to see, don't zoom out
-    if (nextScale > Viewer.zoomMax || nextScale < Viewer.zoomMin) {
+    // if image is too small to see, don't zoom
+    if (nextScale >= Viewer.zoomMax || nextScale <= Viewer.zoomMin
+      || nextScale * this.imageWidth <= Viewer.renderedWidthMin) {
       return;
     }
+    let centerPosition = this.inImageRect(mousePosition) ? mousePosition : this.imageCenterPoint;
 
     this.gfx.clear();
-    this.gfx.zoom(zoomStep, centerPoint, () => this.draw());
+    this.gfx.zoom(zoomStep, centerPosition, () => this.draw());
+  }
+  
+  get imageLeftTopPoint() {
+    return this.gfx.ctx.transformPoint(this.imagePosition);
+  }
+  get imageCenterPoint() {
+    let width = this.imageWidth * this.gfx.scale.x;
+    let height = this.imageHeight * this.gfx.scale.y;
+    return {
+      x: this.imageLeftTopPoint.x + width / 2,
+      y: this.imageLeftTopPoint.y + height / 2
+    };
+  }
+
+  /**
+   * if a mousePosition on top of image
+   * @param {{x: Number, y: Number}} mousePosition x,y distance relative to canvas left top dot
+   */
+  inImageRect(mousePosition) {
+    let topLeft = this.imageLeftTopPoint;
+    let width = this.imageWidth * this.gfx.scale.x;
+    let height = this.imageHeight * this.gfx.scale.y;
+    clog('image topLeft', topLeft);
+    return mousePosition.x >= topLeft.x && mousePosition.x <= topLeft.x + width
+      && mousePosition.y >= topLeft.y && mousePosition.y <= topLeft.y + height;
   }
 
   /**
@@ -133,3 +159,4 @@ class Viewer {
 Viewer.zoomStep = .1;
 Viewer.zoomMax = 5;
 Viewer.zoomMin = .001;
+Viewer.renderedWidthMin = 10;

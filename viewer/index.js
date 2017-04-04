@@ -1,6 +1,10 @@
 /**
  * Please run it under newest chrome
  */
+let clog = function (...args) {
+  console.log(...args);
+};
+
 console.info('Please run it under latest chrome');
 document.addEventListener('DOMContentLoaded', function () {
   /* @var canvas HTMLCanvasElement*/

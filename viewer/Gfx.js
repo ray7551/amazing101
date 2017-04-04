@@ -92,22 +92,16 @@ class Gfx {
 
   zoom(zoomStep, centerPoint = {x: 0, y: 0}, callback) {
     let scale = 1 + zoomStep;
-
-    // this.ctx.save();
-    // this.ctx.setTransform(scale, 0, 0, scale, -centerPoint.x * (scale - 1), -centerPoint.y * (scale - 1))
-    let tCenterPoint = this.ctx.transformPoint(centerPoint);
+    let tCenterPoint = this.ctx.transformMousePoint(centerPoint);
+    
     this.ctx.translate(tCenterPoint.x, tCenterPoint.y);
-    console.log('zoom to scale', scale);
     this.ctx.scale(scale, scale);
     this.ctx.translate(-tCenterPoint.x, -tCenterPoint.y);
-    console.log('c', centerPoint.x, centerPoint.y);
-    console.log('currentScale', this.scale.x, this.scale.y);
-    console.log("transform matrix", this.ctx.transformMatrix);
-    console.log('======');
+    // clog('c', centerPoint.x, centerPoint.y);
+    // clog('currentScale', this.scale.x, this.scale.y);
+    // clog("transform matrix", this.ctx.transformMatrix);
+    clog('======');
     callback();
-
-    // this.ctx.restore();
-    // this.ctx.resetTransform();
   }
 
   get scale() {
