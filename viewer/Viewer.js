@@ -13,6 +13,11 @@ class Viewer {
     this.draw();
     this.thumbGfx.drawRect(0, 0, 'rgb(255, 255, 255)', this.thumbCanvas.width, this.thumbCanvas.height);
 
+    this.addEventListener();
+    // todo: draw grid
+  }
+
+  addEventListener() {
     this.canvas.addEventListener('wheel', (e) => {
       if (!e.deltaY) return;
 
@@ -21,8 +26,33 @@ class Viewer {
         y: e.offsetY
       });
     });
-    // todo: drag and drop
-    // todo: draw grid
+    let isDragging = false;
+    let dragPosition = {};
+    this.canvas.addEventListener('mousedown', (e) => {
+      isDragging = this.image && this.inImageRect({x: e.offsetX, y: e.offsetY});
+      dragPosition = {x: e.offsetX, y: e.offsetY};
+    });
+    this.canvas.addEventListener('mousemove', (e) => {
+      if(!isDragging) {
+        return;
+      }
+      let translateX = (e.offsetX - dragPosition.x) / this.gfx.scale.x;
+      let translateY = (e.offsetY - dragPosition.y) / this.gfx.scale.y;
+      this.gfx.ctx.translate(translateX, translateY);
+      // this.gfx.ctx.translate(e.offsetX - dragPosition.x, e.offsetY - dragPosition.y);
+      // Util.debounce(() => this.draw(), 100)();
+      // this.draw();
+      // this.startAnimation();
+      dragPosition = {x: e.offsetX, y: e.offsetY};
+    });
+    this.canvas.addEventListener('mouseup', () => {
+      this.draw();
+      isDragging = false;
+    });
+    this.canvas.addEventListener('mouseleave', () => {
+      this.draw();
+      isDragging = false;
+    });
   }
 
   _initThumb() {
@@ -71,9 +101,10 @@ class Viewer {
     });
   }
 
+  // todo: if not need, just draw part of image by controlling sx, sy, sw, sh
   draw(sx = 0, sy = 0, sw, sh, dx = 0, dy = 0) {
     this.gfx.background('rgb(255, 255, 255)');
-    this.gfx.grid();
+    // this.gfx.grid();
 
     if (!this.image) {
       return;
@@ -101,7 +132,7 @@ class Viewer {
     // todo: add loading notice before image really show up
     this.gfx.drawImage(this.image, this.sx, this.sy, this.sw, this.sh,
       this.imagePosition.x, this.imagePosition.y, this.imageWidth, this.imageHeight);
-    this.gfx.strokeInnerRect(200, 200, 'red', 200, 200, 2);
+    // this.gfx.strokeInnerRect(200, 200, 'red', 200, 200, 2);
   }
 
   /**
@@ -113,9 +144,11 @@ class Viewer {
     let isZoomIn = wheelDeltaY < 0;
     let zoomStep = isZoomIn ? Viewer.zoomStep : -Viewer.zoomStep;
     let nextScale = this.gfx.scale.x * (1 + zoomStep);
-    // if image is too small to see, don't zoom
+    let nextWidth = nextScale * this.imageWidth;
+    
     if (nextScale >= Viewer.zoomMax || nextScale <= Viewer.zoomMin
-      || nextScale * this.imageWidth <= Viewer.renderedWidthMin) {
+      || nextWidth <= Viewer.renderedWidthMin * this.image.width
+      || nextWidth >= Viewer.renderedWidthMax * this.image.width) {
       return;
     }
     let centerPosition = this.inImageRect(mousePosition) ? mousePosition : this.imageCenterPoint;
@@ -144,7 +177,6 @@ class Viewer {
     let topLeft = this.imageLeftTopPoint;
     let width = this.imageWidth * this.gfx.scale.x;
     let height = this.imageHeight * this.gfx.scale.y;
-    clog('image topLeft', topLeft);
     return mousePosition.x >= topLeft.x && mousePosition.x <= topLeft.x + width
       && mousePosition.y >= topLeft.y && mousePosition.y <= topLeft.y + height;
   }
@@ -157,6 +189,7 @@ class Viewer {
   }
 }
 Viewer.zoomStep = .1;
-Viewer.zoomMax = 5;
+Viewer.zoomMax = 25;
 Viewer.zoomMin = .001;
-Viewer.renderedWidthMin = 10;
+Viewer.renderedWidthMin = .01;
+Viewer.renderedWidthMax = 10;

@@ -90,6 +90,12 @@ class Gfx {
     };
   }
 
+  /**
+   * zoom in/out at a center point
+   * @param zoomStep
+   * @param centerPoint
+   * @param callback
+   */
   zoom(zoomStep, centerPoint = {x: 0, y: 0}, callback) {
     let scale = 1 + zoomStep;
     let tCenterPoint = this.ctx.transformMousePoint(centerPoint);
