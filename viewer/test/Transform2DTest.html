@@ -6,7 +6,7 @@
 </head>
 <body>
 
-<script src="./Transform2D.js"></script>
+<script src="../js/Transform2D.js"></script>
 <script>
   let t = new Transform2D();
   let ctx = document.createElement('canvas').getContext('2d');
@@ -35,6 +35,7 @@
   console.clear();
   console.log(ctx.transformMatrix);
   console.log(ctx.mozCurrentTransform);
+  console.log('It should be ', [15.156463623046875, -41.85592269897461, 24.204832077026367, -18.906070709228516, -60.11704635620117, 99.67877960205078])
   console.log(new Date().toString())
 </script>
 </body>
