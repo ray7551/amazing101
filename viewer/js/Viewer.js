@@ -1,6 +1,8 @@
 import Gfx from './Gfx';
 import Transform2D from './Transform2D';
-// import {clog} from './util';
+import Point from './Point';
+import Rectangle from './Rectangle';
+import {clog} from './util';
 
 /**
  * @author ray7551@gmail.com
@@ -82,7 +84,8 @@ class Viewer {
     // todo: add loading notice before image really show up
     this.gfx.image(this.imageElement, this.sx, this.sy, this.sw, this.sh,
       this.imagePosition.x, this.imagePosition.y, this.imageWidth, this.imageHeight);
-    // this.gfx.strokeInnerRect(200, 200, 'red', 200, 200, 2);
+
+    this._updateThumbRect();
   }
 
   /**
@@ -122,6 +125,16 @@ class Viewer {
   }
 
   _updateThumbRect() {
+    let imgRect = new Rectangle(new Point(0, 0), this.sw, this.sh);
+    let canvasPoint = Point.create(this.gfx.ctx.transformMousePoint(new Point(0, 0)));
+    let canvasRect = new Rectangle(
+      canvasPoint,
+      this.canvas.width / this.gfx.scale.x,
+      this.canvas.height / this.gfx.scale.y
+    );
+    let intersect = Rectangle.intersect(imgRect, canvasRect);
+    clog(intersect);
+
     // let lineWidth = 2, imageOriginPoint = this.gfx.ctx.transformPoint(0, 0),
     //   leftTopPoint;
     //
@@ -133,7 +146,7 @@ class Viewer {
     //   y = this.thumbResize * leftTopPoint.y + this.thumbDy,
     //   width = this.thumbResize * this.imageElement.width,
     //   height = this.thumbResize * this.imageElement.height;
-    // this.thumbGfx.strokeInnerRect(x, y, 'red', width, height, lineWidth);
+    // this.thumbGfx.innerRect(x, y, 'red', width, height, lineWidth);
   }
 
   openImage(img) {
