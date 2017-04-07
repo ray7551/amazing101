@@ -14,7 +14,7 @@ class Viewer {
     this.gfx = new Gfx(canvas, new Transform2D());
     this.thumbGfx = new Gfx(thumbCanvas);
 
-    this.thumbGfx.drawRect(0, 0, 'rgb(255, 255, 255)', this.thumbCanvas.width, this.thumbCanvas.height);
+    this.thumbGfx.background();
 
     this.addEventListener();
     // todo: draw grid
@@ -65,7 +65,7 @@ class Viewer {
       return;
     }
 
-    this.gfx.background('rgb(255, 255, 255)');
+    this.gfx.background();
     // this.gfx.background('gray');
     // this.gfx.grid();
 
@@ -80,7 +80,7 @@ class Viewer {
     this.imageHeight = fit.size.height;
 
     // todo: add loading notice before image really show up
-    this.gfx.drawImage(this.imageElement, this.sx, this.sy, this.sw, this.sh,
+    this.gfx.image(this.imageElement, this.sx, this.sy, this.sw, this.sh,
       this.imagePosition.x, this.imagePosition.y, this.imageWidth, this.imageHeight);
     // this.gfx.strokeInnerRect(200, 200, 'red', 200, 200, 2);
   }
@@ -116,7 +116,7 @@ class Viewer {
     this.thumbPosition = {x: fit.position.x, y: fit.position.y};
     this.thumbResize = fit.size.width / w;
 
-    this.thumbGfx.drawImage(this.imageElement, 0, 0, w, h,
+    this.thumbGfx.image(this.imageElement, 0, 0, w, h,
       this.thumbPosition.x, this.thumbPosition.y, fit.size.width, fit.size.height);
     this._updateThumbRect();
   }

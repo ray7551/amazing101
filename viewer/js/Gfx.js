@@ -1,5 +1,6 @@
 /**
  * Graphic methods
+ * Simplify canvas 2D context functions
  */
 class Gfx {
   /**
@@ -15,10 +16,10 @@ class Gfx {
     }
   }
 
-  background(color) {
+  background(color = 'white') {
     this.ctx.save();
     this.ctx.resetTransform();
-    this.drawRect(0, 0, color, this.canvas.width, this.canvas.height);
+    this.rect(0, 0, color, this.canvas.width, this.canvas.height);
     this.ctx.restore();
   }
 
@@ -26,7 +27,7 @@ class Gfx {
   //
   // }
 
-  drawImage(img, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight) {
+  image(img, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight) {
     this.ctx.drawImage(img, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
   }
 
@@ -37,7 +38,7 @@ class Gfx {
     this.ctx.restore();
   }
 
-  drawCircle(x, y, color, radius) {
+  circle(x, y, color, radius) {
     this.ctx.save();
     this.ctx.fillStyle = color;
     this.ctx.beginPath();
@@ -47,7 +48,7 @@ class Gfx {
     this.ctx.restore();
   }
 
-  strokeInnerRect(x, y, color, width, height, lineWidth = 1) {
+  innerRect(x, y, color, width, height, lineWidth = 1) {
     // default strokeRect method actually draw 'centerRect',
     // so we have to recalculate x, y, width, height here
     x = x + lineWidth / 2;
@@ -62,7 +63,7 @@ class Gfx {
     this.ctx.restore();
   }
 
-  drawRect(x, y, color, width, height) {
+  rect(x, y, color, width, height) {
     height = height === void 0 ? width : height;
     this.ctx.save();
     this.ctx.fillStyle = color;
@@ -73,7 +74,7 @@ class Gfx {
     this.ctx.restore();
   }
 
-  drawText(text, width, height) {
+  text(text, width, height) {
     this.ctx.save();
     this.ctx.font = height + 'px/1.4 arial';
     this.ctx.fillText(text, 0, height);
