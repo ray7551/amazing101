@@ -1,0 +1,25 @@
+{
+  "name": "viewer",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.html",
+  "scripts": {
+    "start": "webpack-dev-server --open",
+    "lint": "eslint \"js/**/*.js\"",
+    "build": "yarn run lint && webpack",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "copy-webpack-plugin": "^4.0.1",
+    "html-webpack-plugin": "^2.28.0",
+    "webpack": "^2.3.3",
+    "webpack-dev-server": "^2.4.2"
+  },
+  "repository": "https://github.com/ray7551/amazing101/tree/master/viewer",
+  "author": "ray7551",
+  "license": "ISC"
+}
