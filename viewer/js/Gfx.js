@@ -1,3 +1,5 @@
+import {clog} from './util';
+
 /**
  * Graphic methods
  */
@@ -22,9 +24,9 @@ class Gfx {
     this.ctx.restore();
   }
 
-  grid(color = 'gray') {
-
-  }
+  // grid(color = 'gray') {
+  //
+  // }
 
   drawImage(img, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight) {
     this.ctx.drawImage(img, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
@@ -45,7 +47,7 @@ class Gfx {
     this.ctx.closePath();
     this.ctx.fill();
     this.ctx.restore();
-  };
+  }
 
   strokeInnerRect(x, y, color, width, height, lineWidth = 1) {
     // default strokeRect method actually draw 'centerRect',
@@ -60,7 +62,7 @@ class Gfx {
     this.ctx.lineWidth = lineWidth;
     this.ctx.strokeRect(x, y, width, height);
     this.ctx.restore();
-  };
+  }
 
   drawRect(x, y, color, width, height) {
     height = height === void 0 ? width : height;
@@ -71,11 +73,11 @@ class Gfx {
     this.ctx.closePath();
     this.ctx.fill();
     this.ctx.restore();
-  };
+  }
 
   drawText(text, width, height) {
     this.ctx.save();
-    this.ctx.font = height + "px/1.4 arial";
+    this.ctx.font = height + 'px/1.4 arial';
     this.ctx.fillText(text, 0, height);
     this.ctx.restore();
   }
@@ -99,14 +101,13 @@ class Gfx {
   zoom(zoomStep, centerPoint = {x: 0, y: 0}, callback) {
     let scale = 1 + zoomStep;
     let tCenterPoint = this.ctx.transformMousePoint(centerPoint);
-    
+
     this.ctx.translate(tCenterPoint.x, tCenterPoint.y);
     this.ctx.scale(scale, scale);
     this.ctx.translate(-tCenterPoint.x, -tCenterPoint.y);
     // clog('c', centerPoint.x, centerPoint.y);
     // clog('currentScale', this.scale.x, this.scale.y);
     // clog("transform matrix", this.ctx.transformMatrix);
-    clog('======');
     callback();
   }
 
@@ -116,8 +117,11 @@ class Gfx {
       y: this.ctx.transformMatrix[3]
     };
   }
+
+  static round(floatNum, i = 6) {
+    i = Math.pow(10, i);
+    return Math.floor(floatNum * i) / i;
+  }
 }
-Gfx.round = function (floatNum, i = 6) {
-  i = Math.pow(10, i);
-  return Math.floor(floatNum * i) / i;
-};
+
+export default Gfx;

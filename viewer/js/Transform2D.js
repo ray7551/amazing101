@@ -22,9 +22,9 @@
  t.track(canvasContext);
  ctx.translate(100, 200);
  ctx.scale(2, 2);
- clog(ctx.transformMatrix); // [2, 0, 0, 2, 100, 200]
+ console.log(ctx.transformMatrix); // [2, 0, 0, 2, 100, 200]
  // if your firefox support mozCurrentTransform
- clog(ctx.mozCurrentTransform); // [2, 0, 0, 2, 100, 200]
+ console.log(ctx.mozCurrentTransform); // [2, 0, 0, 2, 100, 200]
 
 
  @notice Remember that this does not account for any CSS transforms applied to the canvas
@@ -184,7 +184,7 @@ class Transform2D {
     context.save = () => {
       // push a clone matrix instead of push this.m
       savedMatrix.push([...this.m]);
-      return save.call(this.ctx)
+      return save.call(this.ctx);
     };
     const restore = context.restore;
     context.restore = () => {
@@ -266,3 +266,5 @@ class Transform2D {
     context.transform2DTracked = true;
   }
 }
+
+export default Transform2D;
