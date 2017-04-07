@@ -1,14 +1,18 @@
+import Gfx from './Gfx';
+import Transform2D from './Transform2D';
+import {clog} from './util';
+
 /**
  * @author ray7551@gmail.com
  */
 class Viewer {
-  constructor(canvas, thumbCanvas, gfx, thumbGfx) {
+  constructor(canvas, thumbCanvas) {
     this.imageElement = null;
     this.scale = 1;
     this.canvas = canvas; // main canvas
     this.thumbCanvas = thumbCanvas; // thumb canvas
-    this.gfx = gfx;
-    this.thumbGfx = thumbGfx;
+    this.gfx = new Gfx(canvas, new Transform2D());
+    this.thumbGfx = new Gfx(thumbCanvas);
 
     this.thumbGfx.drawRect(0, 0, 'rgb(255, 255, 255)', this.thumbCanvas.width, this.thumbCanvas.height);
 
@@ -39,8 +43,8 @@ class Viewer {
       this.gfx.ctx.translate(translateX, translateY);
       // this.gfx.ctx.translate(e.offsetX - dragPosition.x, e.offsetY - dragPosition.y);
       // Util.debounce(() => this.draw(), 100)();
-      this.drawOnMove && this.draw();
       // this.startAnimation();
+      this.drawOnMove && this.draw();
       dragPosition = {x: e.offsetX, y: e.offsetY};
     });
     this.canvas.addEventListener('mouseup', () => {
@@ -58,7 +62,7 @@ class Viewer {
   }
 
   // todo: if not need, just draw part of image by controlling sx, sy, sw, sh
-  draw(sx = 0, sy = 0, sw, sh) {
+  draw(sx = 0, sy = 0) {
     if (!this.imageElement) {
       return;
     }
@@ -71,9 +75,6 @@ class Viewer {
     this.sy = sy;
     this.sw = this.imageElement.width;
     this.sh = this.imageElement.height;
-    clog('this.image.width > this.canvas.width', this.imageElement.width > this.canvas.width);
-    clog('sx, sy', this.sx, this.sy);
-    clog('sw, sh', this.sw, this.sh);
 
     let fit = this.fitImage(this.sw, this.sh, this.canvas.width, this.canvas.height);
     this.imagePosition = {x: fit.position.x, y: fit.position.y};
@@ -221,3 +222,5 @@ Viewer.fitMode = {
   // just place it at center of canvas
   center: Symbol()
 };
+
+export default Viewer;
