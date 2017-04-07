@@ -1,5 +1,3 @@
-import {clog} from './util';
-
 /**
  * Graphic methods
  */

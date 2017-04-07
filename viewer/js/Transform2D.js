@@ -30,6 +30,7 @@
  @notice Remember that this does not account for any CSS transforms applied to the canvas
  */
 
+import {clog} from './util';
 class Transform2D {
   constructor(m) {
     this.m = (Array.isArray(m) && m.length === 6) ? [...m] : [...Transform2D.identityMatrix];
@@ -165,11 +166,15 @@ class Transform2D {
    * @param {CanvasRenderingContext2D} context
    */
   track(context) {
-    this.ctx = context;
     if (context.transform2DTracked) {
+      clog.warn('This context is already tracked.');
       return;
     }
 
+    this.ctx = context;
+    Object.defineProperty(context, 'transform2DTracked', {
+      value: true
+    });
     // read only property, a copy of current transformMatrix
     Object.defineProperty(context, 'transformMatrix', {
       get: () => [...this.m],
@@ -263,7 +268,6 @@ class Transform2D {
       return Transform2D.transformPoint(mousePoint, Transform2D.inverse(this.m));
     };
 
-    context.transform2DTracked = true;
   }
 }
 

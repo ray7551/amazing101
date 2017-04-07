@@ -1,6 +1,6 @@
 import Gfx from './Gfx';
 import Transform2D from './Transform2D';
-import {clog} from './util';
+// import {clog} from './util';
 
 /**
  * @author ray7551@gmail.com
@@ -43,19 +43,17 @@ class Viewer {
       this.gfx.ctx.translate(translateX, translateY);
       // this.gfx.ctx.translate(e.offsetX - dragPosition.x, e.offsetY - dragPosition.y);
       // Util.debounce(() => this.draw(), 100)();
-      // this.startAnimation();
       this.drawOnMove && this.draw();
+      // this.startAnimation();
       dragPosition = {x: e.offsetX, y: e.offsetY};
     });
     this.canvas.addEventListener('mouseup', () => {
       if (!isDragging) return;
-
       this.draw();
       isDragging = false;
     });
     this.canvas.addEventListener('mouseleave', () => {
       if (!isDragging) return;
-
       this.draw();
       isDragging = false;
     });
