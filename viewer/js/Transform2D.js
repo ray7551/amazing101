@@ -31,6 +31,7 @@
  */
 
 import {clog} from './util';
+import Rectangle from './Rectangle';
 class Transform2D {
   constructor(m) {
     this.m = (Array.isArray(m) && m.length === 6) ? [...m] : [...Transform2D.identityMatrix];
@@ -74,6 +75,11 @@ class Transform2D {
     ];
   }
 
+  /**
+   * @param {Point|{x: Number, y: Number}} point
+   * @param {Array} matrix
+   * @return {{x: Number, y: Number}}
+   */
   static transformPoint(point, matrix) {
     let {x, y} = point;
     if (!Transform2D.isNumber(x, y) || !Transform2D.isTransformMatrix(matrix)) {
@@ -83,6 +89,29 @@ class Transform2D {
       x: x * matrix[0] + y * matrix[2] + matrix[4],
       y: x * matrix[1] + y * matrix[3] + matrix[5]
     };
+  }
+
+  /**
+   * @param {Rectangle} rectangle
+   * @param {Array} matrix
+   * @return {Rectangle}
+   */
+  static transformRect(rectangle, matrix) {
+    if (!Transform2D.isTransformMatrix(matrix)) {
+      throw new Error('transformRect parameters invalid.');
+    }
+    return new Rectangle(
+      Transform2D.transformPoint(rectangle.leftTopPoint, matrix),
+      rectangle.width * matrix[0],
+      rectangle.height * matrix[3]
+    );
+  }
+
+  get scaleX() {
+    return this.m[0];
+  }
+  get scaleY() {
+    return this.m[3];
   }
 
   setMatrix(matrix) {
@@ -157,6 +186,9 @@ class Transform2D {
 
   transformPoint(point) {
     return Transform2D.transformPoint(point, this.m);
+  }
+  transformRect(rect) {
+    return Transform2D.transformRect(rect, this.m);
   }
 
   /**
@@ -260,12 +292,26 @@ class Transform2D {
      * Transform a mouse point position(relative to the canvas left top dot)
      * to its current transformed coordination position
      */
-    context.transformMousePoint = (mousePoint) => {
+    context.inverseTransformPoint = (mousePoint) => {
       // coordination position -> this.m -> mousePoint position
       // mousePoint position -> Transform2D.inverse(this.m) -> coordination position
       // Here we use a inverse matrix because
       // we want to get its coordination position
       return Transform2D.transformPoint(mousePoint, Transform2D.inverse(this.m));
+    };
+    /**
+     * @param {Rectangle} rect
+     * @return {Rectangle}
+     */
+    context.transformRect = (rect) => {
+      return Transform2D.transformRect(rect, this.m);
+    };
+    /**
+     * @param {Rectangle} rect
+     * @return {Rectangle}
+     */
+    context.inverseTransformRect = (rect) => {
+      return Transform2D.transformRect(rect, Transform2D.inverse(this.m));
     };
 
   }

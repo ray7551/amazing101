@@ -2,6 +2,7 @@
  * Graphic methods
  * Simplify canvas 2D context functions
  */
+import {clog} from './util';
 class Gfx {
   /**
    * @param {HTMLCanvasElement} canvas
@@ -26,8 +27,18 @@ class Gfx {
   // grid(color = 'gray') {
   //
   // }
-
-  image(img, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight) {
+  /**
+   * @param {HTMLImageElement|HTMLVideoElement|HTMLCanvasElement|CanvasRenderingContext2D|ImageBitmap} img
+   * @param sx
+   * @param sy
+   * @param sWidth
+   * @param sHeight
+   * @param dx
+   * @param dy
+   * @param dWidth
+   * @param dHeight
+   */
+  image(img, {sx=0, sy=0, sWidth=img.width, sHeight=img.height, dx=0, dy=0, dWidth=img.width, dHeight=img.height} = {}) {
     this.ctx.drawImage(img, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
   }
 
@@ -99,14 +110,15 @@ class Gfx {
    */
   zoom(zoomStep, centerPoint = {x: 0, y: 0}, callback) {
     let scale = 1 + zoomStep;
-    let tCenterPoint = this.ctx.transformMousePoint(centerPoint);
+    let tCenterPoint = this.ctx.inverseTransformPoint(centerPoint);
 
     this.ctx.translate(tCenterPoint.x, tCenterPoint.y);
     this.ctx.scale(scale, scale);
     this.ctx.translate(-tCenterPoint.x, -tCenterPoint.y);
-    // clog('c', centerPoint.x, centerPoint.y);
+    clog('center', centerPoint.x, centerPoint.y);
+    clog('inverseTransform centerPoint', tCenterPoint.x, tCenterPoint.y);
     // clog('currentScale', this.scale.x, this.scale.y);
-    // clog("transform matrix", this.ctx.transformMatrix);
+    // clog('transform matrix', ...this.ctx.transformMatrix);
     callback();
   }
 

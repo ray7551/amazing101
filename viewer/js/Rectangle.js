@@ -1,7 +1,7 @@
 import Point from './Point';
 class Rectangle {
   /**
-   * @param {Point} leftTopPoint
+   * @param {Point|{x: Number, y: Number}} leftTopPoint
    * @param {Number} width
    * @param {Number} height
    */
@@ -48,8 +48,8 @@ class Rectangle {
       Math.max(rect1.top, rect2.top)
     );
     let rightBottomPoint = new Point(
-      Math.min(rect1.right, rect1.right),
-      Math.min(rect1.bottom, rect1.bottom)
+      Math.min(rect1.right, rect2.right),
+      Math.min(rect1.bottom, rect2.bottom)
     );
     if(leftTopPoint.x <= rightBottomPoint.x
       && leftTopPoint.y <= rightBottomPoint.y) {

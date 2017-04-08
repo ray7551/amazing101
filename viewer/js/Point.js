@@ -36,11 +36,12 @@ class Point {
   }
 
   /**
-   * @param {{x: Number, y: Number}} obj
+   * @param {Number} x
+   * @param {Number} y
    * @return {Point}
    */
-  static create(obj) {
-    return new Point(obj.x, obj.y);
+  static create({x = 0, y = 0} = {}) {
+    return new Point(x, y);
   }
 
   static isEqual(p1, p2) {
